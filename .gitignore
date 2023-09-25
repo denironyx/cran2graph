@@ -1,2 +1,4 @@
 # Ignore Virtual requirements
 venv/
+.Rproj.user
+cran2graph.Rproj
