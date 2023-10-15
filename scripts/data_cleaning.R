@@ -22,6 +22,8 @@ cran_data <- cran_data %>%
   select_all(tolower) %>%
   select(all_of(colnames))
 
+cran_data %>% head()
+
 # split the imports column into individual package name
 data_split <- cran_data %>% 
   separate_rows(imports, sep = ", ") %>% 
@@ -69,10 +71,19 @@ data_split <- data_split %>%
   )
 
 # Split the "imports" column into individual package names
+# Extract the institution and domain from the "maintainer" column
 data_split <- data_split %>%
   separate_rows(imports, sep = ",") %>%
   mutate(imports = gsub("\\s*\\(>=.*?\\)", "", imports),
-         maintainer = gsub("<[^>]+>", "", maintainer))
+         institution = sub(".*@(.+?)\\..*", "\\1", maintainer),
+         domain = sub(".*\\.(.+?)$>", "\\1", maintainer),
+         maintainer_email = sub(".*<(.+)>", "\\1", maintainer),
+         maintainer_name = gsub("<[^>]+>", "", maintainer))
+
+## Split the "depends" column into individual dependency values
+data_split <- data_split %>% 
+  separate_rows(depends, sep = ", ") #%>%
+  #filter(!grepl("^R \\(>=", depends))
 
 
 
@@ -81,4 +92,16 @@ nrow(data_split) #406714 #342245
 # Extract the institution from the "maintainer" column using regex
 data_split %>%
   head(n = 100) %>% 
+  View()
+
+
+
+data_split %>% 
+  mutate(
+    email = sub(".*<(.+)>", "\\1", maintainer),
+    institution = sub(".*@(.+?)\\..*", "\\1", maintainer),
+    domain = sub(".*\\.(.+?)$", "\\1", maintainer),
+    name = sub("(.+?) <", "\\1", maintainer)
+  ) %>% 
+  head(1000) %>% 
   View()
