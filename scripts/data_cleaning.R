@@ -31,7 +31,7 @@ data_split <- cran_data %>%
          published_datetime = paste(unlist((`date/publication`))),
          published_datetime = as.POSIXct(published_datetime , tz='UTC', format = "%Y-%m-%d %H:%M:%S"),
          published_date = as.Date(published_datetime)
-      )
+  )
 
 
 # Extract username from the packaged column using ";" as the separator
@@ -42,12 +42,12 @@ data_split <- data_split %>%
 # Extract the institution, email and domain from the "maintainer" column
 data_split <- data_split %>%
   mutate(
-         institution = sub(".*@(.+?)\\..*", "\\1", maintainer),
-         domain = sub(".*\\.(.+?)$", "\\1", maintainer),
-         domain = gsub(">", "", domain),
-         maintainer_email = sub(".*<(.+)>", "\\1", maintainer),
-         maintainer_name = gsub("<[^>]+>", "", maintainer)
-         )
+    institution = sub(".*@(.+?)\\..*", "\\1", maintainer),
+    domain = sub(".*\\.(.+?)$", "\\1", maintainer),
+    domain = gsub(">", "", domain),
+    maintainer_email = sub(".*<(.+)>", "\\1", maintainer),
+    maintainer_name = gsub("<[^>]+>", "", maintainer)
+  )
 
 # split the imports column into individual package name
 data_split <- data_split %>%
@@ -114,16 +114,24 @@ data_split %>%
   head(n = 100) %>% 
   View()
 
+processed_df <- data_split %>% 
+  select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_username, maintainer_name,  maintainer_email, institution, domain, published_date, published_datetime)
 
-
-
-
-data_split %>% 
-  mutate(
-    email = sub(".*<(.+)>", "\\1", maintainer),
-    institution = sub(".*@(.+?)\\..*", "\\1", maintainer),
-    domain = sub(".*\\.(.+?)$", "\\1", maintainer),
-    name = sub("(.+?) <", "\\1", maintainer)
-  ) %>% 
-  head(1000) %>% 
+processed_df %>% 
+  head(n = 1000) %>% 
   View()
+
+
+readr::write_csv(processed_df, "data/processed/cran_process_data.csv")
+
+
+
+# data_split %>% 
+#   mutate(
+#     email = sub(".*<(.+)>", "\\1", maintainer),
+#     institution = sub(".*@(.+?)\\..*", "\\1", maintainer),
+#     domain = sub(".*\\.(.+?)$", "\\1", maintainer),
+#     name = sub("(.+?) <", "\\1", maintainer)
+#   ) %>% 
+#   head(1000) %>% 
+#   View()

@@ -2,3 +2,4 @@
 venv/
 .Rproj.user
 cran2graph.Rproj
+data/processed
