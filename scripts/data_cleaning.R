@@ -1,5 +1,6 @@
 library(dplyr)
 library(readr)
+library(tidyr)
 
 #import data
 cran_data <- read_csv('data/raw/cran_package_200911.csv', col_names = TRUE)
@@ -66,6 +67,13 @@ data_split <- data_split %>%
     author = gsub("\\s*,\\s*", ", ", author),  # Remove extra spaces after removal
     author = trimws(author)  # Remove leading/trailing spaces
   )
+
+# Split the "imports" column into individual package names
+data_split <- data_split %>%
+  separate_rows(imports, sep = ",") %>%
+  mutate(imports = gsub("\\s*\\(>=.*?\\)", "", imports),
+         maintainer = gsub("<[^>]+>", "", maintainer))
+
 
 
 nrow(data_split) #406714 #342245
