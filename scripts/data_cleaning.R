@@ -133,4 +133,6 @@ processed_df %>%
 #     name = sub("(.+?) <", "\\1", maintainer)
 #   ) %>% 
 #   head(1000) %>% 
-#   View()
+#   View()\
+
+processed_df %>% head()

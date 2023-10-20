@@ -26,6 +26,8 @@ The expected results include the successful implementation of the Cran2Graph sys
 
 This research project contributes to the enhancement of open source package recommendation in the Cran ecosystem by introducing "Cran2Graph", a recommendation system. It provides a methodology for integrating knowledge graphs and large language models into recommendation systems, with implications beyond the R ecosystem. The methodology used would improve answering detailed questions about open source package relationships.
 
+#### References
+- https://towardsdatascience.com/integrate-llm-workflows-with-knowledge-graph-using-neo4j-and-apoc-27ef7e9900a2
 
 
 # TO do
