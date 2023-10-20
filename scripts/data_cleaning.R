@@ -104,27 +104,26 @@ data_split <- data_split %>%
 #filter(!grepl("^R \\(>=", depends))
 
 
-
+## Replace NA values in imports with values from depends
+data_split <- data_split %>% 
+  mutate(imports = ifelse(imports == "" | is.na(imports), depends, imports))
 
 
 nrow(data_split) #406714 #342245
 
-# Extract the institution from the "maintainer" column using regex
-data_split %>%
-  head(n = 100) %>% 
-  View()
-
 processed_df <- data_split %>% 
   select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_username, maintainer_name,  maintainer_email, institution, domain, published_date, published_datetime)
-
-processed_df %>% 
-  head(n = 1000) %>% 
-  View()
 
 
 readr::write_csv(processed_df, "data/processed/cran_process_data.csv")
 
 
+## Replace NA values in imports with values from depends
+processed_df %>% 
+  mutate(imports = ifelse(imports == "" | is.na(imports), depends, imports)) %>% 
+  #filter(package == 'ABACUS') %>% 
+  head(n = 1000) %>% 
+  View()
 
 # data_split %>% 
 #   mutate(
