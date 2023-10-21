@@ -1,11 +1,13 @@
 LOAD CSV WITH HEADERS FROM 'file:///cran_process_data.csv' AS row
 
+WITH row, REPLACE(row.description, '"', "'") AS fixedDescription
+
 CREATE (p:Package:Package {
   name: row.package,
   version: row.version,
   license: COALESCE(row.license, ""),
   md5sum: COALESCE(row.md5sum, ""),
-  description: COALESCE(row.description, ""),
+  description: COALESCE(row.fixedDescription, ""),
   published: date(row.published_date)
 })
 
