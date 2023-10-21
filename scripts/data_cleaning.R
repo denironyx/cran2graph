@@ -119,6 +119,9 @@ data_split <- data_split %>%
                      ifelse(company %in% c("gmail", "hotmail", "outlook"), "Undefined", "Industry"))
   )
 
+# Replace NA values with "N/A" for all columns
+data_split <- data_split %>%
+  mutate_all(~ifelse(is.na(.), "N/A", .))
 
 data_split %>% 
   head(n=1000) %>% 
