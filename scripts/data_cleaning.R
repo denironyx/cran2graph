@@ -108,6 +108,21 @@ data_split <- data_split %>%
 data_split <- data_split %>% 
   mutate(imports = ifelse(imports == "" | is.na(imports), depends, imports))
 
+# Remove single quotes and double quotes from the "description" column
+data_split <- data_split %>%
+  mutate(description = gsub("['\"]", "", description))
+
+# Create the "company" column based on domain and institution
+data_split <- data_split %>%
+  mutate(company = institution,
+    institution = ifelse(domain == "edu", "Academic",
+                     ifelse(company %in% c("gmail", "hotmail", "outlook"), "Undefined", "Industry"))
+  )
+
+
+data_split %>% 
+  head(n=1000) %>% 
+  View()
 
 nrow(data_split) #406714 #342245
 

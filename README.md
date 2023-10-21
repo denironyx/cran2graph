@@ -10,7 +10,9 @@ R users face a daunting challenge in discovering relevant CRAN packages and rela
 
 ## Objectives:
 
-• To design and develop Cran2Graph, a system that leverages knowledge graphs and large language models to enhance open-source package. • To evaluate the effectiveness of Cran2Graph in answering user questions about the authors relationships with packages, package maintainers. • To establish comprehensive evaluation metrics for assessing the quality of package recommendations.
+- To design and develop Cran2Graph, a system that leverages knowledge graphs and large language models to enhance open-source package. 
+- To evaluate the effectiveness of Cran2Graph in answering user questions about the authors relationships with packages, package maintainers. 
+- To establish comprehensive evaluation metrics for assessing the quality of package recommendations.
 
 ## Methodological approach:
 
@@ -31,6 +33,8 @@ This research project contributes to the enhancement of open source package reco
 
 
 # TO do
+
+- query a email string to find 'edu', or 'math'
 
 Required to isntall `nmslib`
 
