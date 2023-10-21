@@ -37,12 +37,12 @@ import logging
 import neo4j
 
 
-def get_neo4j_connection(address: str="neo4j") -> neo4j.Session:
+def get_neo4j_connection() -> neo4j.Session:
     """
     Gets a session to neo4j
     """
     driver = neo4j.GraphDatabase.driver(
-        f"bolt:{address}//:7687", auth=("neo4j", "neo4j222")
+        "bolt://localhost:7687", auth=("admin", "cran2graph")
     )
     try:
         driver.verify_connectivity()

@@ -23,6 +23,7 @@ cran_data <- cran_data %>%
   select(all_of(colnames))
 
 
+cran_data %>% head(100) %>% View()
 
 # working with datetime
 
@@ -32,6 +33,8 @@ data_split <- cran_data %>%
          published_datetime = as.POSIXct(published_datetime , tz='UTC', format = "%Y-%m-%d %H:%M:%S"),
          published_date = as.Date(published_datetime)
   )
+
+data_split %>% head(n=100) %>% View()
 
 
 # Extract username from the packaged column using ";" as the separator
@@ -110,7 +113,12 @@ data_split <- data_split %>%
 
 # Remove single quotes and double quotes from the "description" column
 data_split <- data_split %>%
-  mutate(description = gsub("['\"]", "", description))
+  mutate(description = gsub("['\"]", "", description),
+         description = gsub('"', '', description),
+         description = gsub('\\\\', '', description),
+         author = gsub("['\"]", "", author),
+         author = gsub('\\\\', '', author),
+         author = gsub('"', '', author))
 
 # Create the "company" column based on domain and institution
 data_split <- data_split %>%
@@ -121,7 +129,12 @@ data_split <- data_split %>%
 
 # Replace NA values with "N/A" for all columns
 data_split <- data_split %>%
-  mutate_all(~ifelse(is.na(.), "N/A", .))
+  mutate_at(vars(-published_date, -published_datetime), ~ifelse(is.na(.), "N/A", .))
+
+data_split2 %>% 
+  head(n=100) %>% 
+  View()
+
 
 data_split %>% 
   head(n=1000) %>% 
@@ -130,8 +143,9 @@ data_split %>%
 nrow(data_split) #406714 #342245
 
 processed_df <- data_split %>% 
-  select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_username, maintainer_name,  maintainer_email, institution, domain, published_date, published_datetime)
+  select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_name, maintainer_email, institution, domain, published_date)
 
+# EXporting data to csv file
 
 readr::write_csv(processed_df, "data/processed/cran_process_data.csv")
 
@@ -154,3 +168,8 @@ processed_df %>%
 #   View()\
 
 processed_df %>% head()
+
+processed_df %>% 
+  filter(package == 'boot') %>% View()
+
+processed_df %>% distinct(package) %>% nrow()

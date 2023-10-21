@@ -35,6 +35,7 @@ This research project contributes to the enhancement of open source package reco
 # TO do
 
 - query a email string to find 'edu', or 'math'
+- Having issue creating index for person, and package nodes.
 
 Required to isntall `nmslib`
 
