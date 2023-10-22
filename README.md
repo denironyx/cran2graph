@@ -44,6 +44,13 @@ MATCH (a:Person {person: 'Hadley Wickham'})-[:CONTRIBUTED_TO]->(p:Package)
 RETURN p;
 
 
+--- 
+
+MATCH (a:Person {person: 'Jing Zhang'})-[:MAINTAINS]->(maintainedPackage)
+MATCH (a)-[:CONTRIBUTED_TO]->(contributedPackage)
+RETURN a, maintainedPackage, contributedPackage
+
+
 # TO do
 
 - query a email string to find 'edu', or 'math'
@@ -61,3 +68,6 @@ Experiencing difficult split the domain, institution from the maintainer column 
 - MERGE is a match command with  a convention with a create command. WHen it matches with the node and properties, it first try to matches and then if it doesn't find it creates a new node. 
 - I don't want to merge on author. So, I need to think about what happen when there is MATCH is found. 
 - Create all of the node for author seperate csv, create what we have for package separate csv. 
+- Heuristic approach -  give me all the name of the people who the names are the same, contributes to the same package and they have different email. Add a relationship to them as "same_as" 
+- Look into a graph projection native projection 
+- ETL 

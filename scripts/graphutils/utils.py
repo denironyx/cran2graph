@@ -8,7 +8,7 @@ class Neo4jConnect:
         self.driver.close()
         
     def query(self, query):
-        session = self.driver.session()
+        session = self.driver.session(database="cran")
         result = session.run(query)
         return result
     
