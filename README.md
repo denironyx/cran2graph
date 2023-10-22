@@ -32,6 +32,18 @@ This research project contributes to the enhancement of open source package reco
 - https://towardsdatascience.com/integrate-llm-workflows-with-knowledge-graph-using-neo4j-and-apoc-27ef7e9900a2
 
 
+### Testing Graph
+
+MATCH (a:Person {person: 'Jing Zhang'})-[:MAINTAINS]->(p:Package)
+RETURN a,p
+LIMIT 10;
+
+----
+
+MATCH (a:Person {person: 'Hadley Wickham'})-[:CONTRIBUTED_TO]->(p:Package)
+RETURN p;
+
+
 # TO do
 
 - query a email string to find 'edu', or 'math'
@@ -42,3 +54,10 @@ Required to isntall `nmslib`
 License <https://opensource.org/licenses/>
 
 Experiencing difficult split the domain, institution from the maintainer column why [erch\@mathematik.uni-marburg.de](mailto:erch@mathematik.uni-marburg.de){.email} mathematik Florian [Lerchlerch\@mathematik.uni-marburg.de](mailto:Lerchlerch@mathematik.uni-marburg.de){.email}\>
+
+
+
+- Learn more about MERGE clause and it's tricks.
+- MERGE is a match command with  a convention with a create command. WHen it matches with the node and properties, it first try to matches and then if it doesn't find it creates a new node. 
+- I don't want to merge on author. So, I need to think about what happen when there is MATCH is found. 
+- Create all of the node for author seperate csv, create what we have for package separate csv. 
