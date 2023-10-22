@@ -58,6 +58,28 @@ MATCH (a)-[:WORKS_IN]->(i:Institution)
 RETURN a,p, l, i
 LIMIT 10;
 
+-----
+MATCH(d:Dependency {name: "dplyr"}) <-[:DEPENDS_ON]-(p:Package)
+RETURN d, p 
+LIMIT 25;
+
+-----
+MATCH (p:Package {package: "dplyr"}) -[:DEPENDS_ON]->(d:Dependency)
+
+RETURN p, d
+limit 25;
+
+---
+
+MATCH (a:Person {person: 'Jing Zhang'})-[:CONTRIBUTED_TO]->(p:Package)
+MATCH (p)-[:LICENSE_BY]->(l:License)
+MATCH (p)-[:DEPENDS_ON]->(d:Dependency)
+MATCH (a)-[:WORKS_IN]->(i:Institution)
+RETURN a,p, l, i, d
+LIMIT 25;
+
+
+
 # TO do
 
 - query a email string to find 'edu', or 'math'
