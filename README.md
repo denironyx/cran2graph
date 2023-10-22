@@ -44,12 +44,19 @@ MATCH (a:Person {person: 'Hadley Wickham'})-[:CONTRIBUTED_TO]->(p:Package)
 RETURN p;
 
 
---- 
+----- working
 
 MATCH (a:Person {person: 'Jing Zhang'})-[:MAINTAINS]->(maintainedPackage)
 MATCH (a)-[:CONTRIBUTED_TO]->(contributedPackage)
 RETURN a, maintainedPackage, contributedPackage
 
+
+-----
+MATCH (a:Person {person: 'Jing Zhang'})-[:CONTRIBUTED_TO]->(p:Package)
+MATCH (p)-[:LICENSE_BY]->(l:License)
+MATCH (a)-[:WORKS_IN]->(i:Institution)
+RETURN a,p, l, i
+LIMIT 10;
 
 # TO do
 
