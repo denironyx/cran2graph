@@ -100,3 +100,7 @@ Experiencing difficult split the domain, institution from the maintainer column 
 - Heuristic approach -  give me all the name of the people who the names are the same, contributes to the same package and they have different email. Add a relationship to them as "same_as" 
 - Look into a graph projection native projection 
 - ETL 
+
+
+### References
+- https://towardsdatascience.com/integrate-llm-workflows-with-knowledge-graph-using-neo4j-and-apoc-27ef7e9900a2
