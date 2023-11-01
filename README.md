@@ -104,3 +104,6 @@ Experiencing difficult split the domain, institution from the maintainer column 
 
 ### References
 - https://towardsdatascience.com/integrate-llm-workflows-with-knowledge-graph-using-neo4j-and-apoc-27ef7e9900a2
+
+
+Note: CRAN DATA, like any other dataset, has its limitations and potential biases. Some data may not be collected or reported uniformly across different regions or time periods, which can affect the comparability of results. Users should keep these limitations in mind when interpreting the results of their queries and exercise caution when making decisions based on census data.
