@@ -1,6 +1,7 @@
 library(dplyr)
 library(readr)
 library(tidyr)
+library(tidyverse)
 
 #import data
 #cran_data2 <- read_csv('data/raw/cran_package_200911.csv', col_names = TRUE)
@@ -37,7 +38,7 @@ data_split <- cran_data %>%
          published_date = as.Date(published_datetime)
   )
 
-data_split %>% head(n=100) %>% View()
+# data_split %>% head(n=100) %>% View()
 
 
 # Extract username from the packaged column using ";" as the separator
@@ -90,14 +91,13 @@ nrow(cran_data)
 
 data_split1 <- data_split
 
-data_split2 <- data_split1
-
-data_split1 %>%  
-  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils')) %>% View("dateclean")
+# 
+# data_split1 %>%  
+#   filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils')) %>% View("dateclean")
 
 
 # to do: case when null = N/A
-data_split <- data_split1 %>% 
+data_split <- data_split %>% 
   mutate(sponsor = str_extract(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\]| \\[fnd, cph\\])"),
          #sponsor = str_extract(author, ".*(?= \\[fnd, cph\\])"),
          author = str_replace(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\]|\\[fnd, cph\\])",""),
@@ -181,14 +181,14 @@ data_split <- data_split %>%
 data_split <- data_split %>%
   mutate_at(vars(-published_date, -published_datetime), ~ifelse(is.na(.), "N/A", .))
 
-data_split2 %>% 
-  head(n=100) %>% 
-  View()
-
-
-data_split %>% 
-  head(n=1000) %>% 
-  View()
+# data_split2 %>% 
+#   head(n=100) %>% 
+#   View()
+# 
+# 
+# data_split %>% 
+#   head(n=1000) %>% 
+#   View()
 
 nrow(data_split) #406714 #342245
 
@@ -203,9 +203,24 @@ processed_df %>%
   filter(maintainer_name == 'Kirill Müller') %>% 
   View()
 
+
+
+fileEncoding <- "UTF-8"
+
+# Export the data to a CSV file with the specified encoding
+write.csv(processed_df, "data/processed/cran_database_data2.csv", fileEncoding = fileEncoding, quote = FALSE)
 # EXporting data to csv file
 
 readr::write_csv(processed_df, "data/processed/cran_process_data.csv")
+
+
+
+library(jsonlite)
+
+json_data <- toJSON(processed_df, pretty = TRUE)
+
+# export to json file
+write_json(json_data, 'data/processed/cran_data.json')
 
 
 ## Replace NA values in imports with values from depends
@@ -231,3 +246,5 @@ processed_df %>%
   filter(package == 'boot') %>% View()
 
 processed_df %>% distinct(package) %>% nrow()
+
+write.
