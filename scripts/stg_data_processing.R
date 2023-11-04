@@ -97,30 +97,47 @@ data_split1 %>%
 
 # to do: case when null = N/A
 data_split <- data_split1 %>% 
-  mutate(sponsor = str_extract(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\])"))
+  mutate(sponsor = str_extract(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\])"),
+         author = str_replace(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\])", ""))
 
-data_split <- data_split1 %>%
+data_split <- data_split %>%
   mutate(
-    author = str_replace(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\])", ""),
-    author = gsub("\\[ctb\\]|\\[cph\\]|\\[cre, aut\\]|\\[aut, cre\\]|\\[aut\\]|\\[cet\\]", "", author),
+    author = gsub("\\[ctb\\]|\\[cph\\]|\\[cre, aut\\]|\\[aut, cre\\]|\\[aut\\]|\\[cet\\]|\\[cph, fnd\\]| \\[fnd\\]|\\[aut, cre, cph\\]|\\[trl\\]", "", author),
     author = gsub("\\s*,\\s*", ", ", author),  # Remove extra spaces after removal
     author = trimws(author)  # Remove leading/trailing spaces
   )
-
 # Split the "author" column into separate authors
 data_split <- data_split %>%
-  separate_rows(author, sep = ",") %>%
+  separate_rows(author, sep = ", ") %>%
   mutate(author = trimws(author))  # Remove leading/trailing spaces
 
 data_split <- data_split %>%
   mutate(
     author = gsub("\\s*\\([^)]*\\)", "", author),  # Remove anything within parentheses
     author = gsub("\\s*,\\s*", ", ", author),  # Remove extra spaces after removal
-    author = trimws(author)  # Remove leading/trailing spaces
+    author = trimws(author),  # Remove leading/trailing spaces
+    author = sub(',', "", author)
   )
 
-data_split %>%  
-  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils')) %>% View("authorclean")
+data_split <- data_splits %>% 
+  mutate(
+    sponsor = ifelse(author == "RStudio" | package == 'ABC.RAP', "RStudio", sponsor)
+  ) %>% 
+  filter(author != "RStudio") %>% 
+  filter(author != "Rstudio")
+
+
+data_splits %>% 
+  head(n = 1000) %>% 
+  View()
+
+data_split %>% 
+  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP')) %>% View("authorclean")
+
+data_split %>% 
+  filter(author %in% c('RStudio', 'Rstudio')) %>% 
+  View("rstudio")
+  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP')) %>% View("authorclean")
 
 
 ## Split the "depends" column into individual dependency values

@@ -110,3 +110,6 @@ Note: CRAN DATA, like any other dataset, has its limitations and potential biase
 
 
 --- SOurce: https://crandb.r-pkg.org:2053/cran/_design/internal/_view/new 
+
+
+557 was removed when I remove rows that contains Rstudio or RStudio
