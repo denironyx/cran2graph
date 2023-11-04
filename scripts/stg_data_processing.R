@@ -39,13 +39,11 @@ data_split <- cran_data %>%
 
 data_split %>% head(n=100) %>% View()
 
-data_split %>% 
-  filter(package == 'abjutils')
-
 
 # Extract username from the packaged column using ";" as the separator
 data_split <- data_split %>% 
   mutate(maintainer_username = sub(".*; ", "", packaged))
+
 
 # Split the "imports" column into individual package names
 # Extract the institution, email and domain from the "maintainer" column
@@ -61,7 +59,8 @@ data_split <- data_split %>%
 # split the imports column into individual package name
 data_split <- data_split %>%
   # Split the date column to datatime and normal date values
-  separate_rows(imports, sep = ", ") %>% 
+  separate_rows(imports, sep = ",") %>% 
+  mutate(imports = sub(" ", "", imports)) %>% 
   mutate(imports = gsub("\\s*\\(>=.*?\\)", "", imports),
          imports = gsub("\\s*\\(>=.*?\\)", "", imports)) # remove version specifications
 
@@ -87,8 +86,22 @@ nrow(cran_data)
 #   mutate(author = trimws(author))  # Remove leading/trailing spaces
 
 # Remove specified author entries and clean the "author" column
-data_split <- data_split %>%
+
+data_split1 <- data_split
+
+data_split2 <- data_split1
+
+data_split1 %>%  
+  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils')) %>% View("dateclean")
+
+
+# to do: case when null = N/A
+data_split <- data_split1 %>% 
+  mutate(sponsor = str_extract(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\])"))
+
+data_split <- data_split1 %>%
   mutate(
+    author = str_replace(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\])", ""),
     author = gsub("\\[ctb\\]|\\[cph\\]|\\[cre, aut\\]|\\[aut, cre\\]|\\[aut\\]|\\[cet\\]", "", author),
     author = gsub("\\s*,\\s*", ", ", author),  # Remove extra spaces after removal
     author = trimws(author)  # Remove leading/trailing spaces
@@ -105,6 +118,9 @@ data_split <- data_split %>%
     author = gsub("\\s*,\\s*", ", ", author),  # Remove extra spaces after removal
     author = trimws(author)  # Remove leading/trailing spaces
   )
+
+data_split %>%  
+  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils')) %>% View("authorclean")
 
 
 ## Split the "depends" column into individual dependency values
@@ -129,8 +145,8 @@ data_split <- data_split %>%
 # Create the "company" column based on domain and institution
 data_split <- data_split %>%
   mutate(company = institution,
-    institution = ifelse(domain == "edu", "Academic",
-                     ifelse(company %in% c("gmail", "hotmail", "outlook"), "Undefined", "Industry"))
+         institution = ifelse(domain == "edu", "Academic",
+                              ifelse(company %in% c("gmail", "hotmail", "outlook"), "Undefined", "Industry"))
   )
 
 # Replace NA values with "N/A" for all columns
