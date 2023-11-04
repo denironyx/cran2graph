@@ -53,7 +53,8 @@ data_split <- data_split %>%
     domain = sub(".*\\.(.+?)$", "\\1", maintainer),
     domain = gsub(">", "", domain),
     maintainer_email = sub(".*<(.+)>", "\\1", maintainer),
-    maintainer_name = gsub("<[^>]+>", "", maintainer)
+    maintainer_name = gsub("<[^>]+>", "", maintainer),
+    maintainer_name = trimws(maintainer_name)
   )
 
 # split the imports column into individual package name
@@ -97,15 +98,20 @@ data_split1 %>%
 
 # to do: case when null = N/A
 data_split <- data_split1 %>% 
-  mutate(sponsor = str_extract(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\])"),
-         author = str_replace(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\])", ""))
+  mutate(sponsor = str_extract(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\]| \\[fnd, cph\\])"),
+         #sponsor = str_extract(author, ".*(?= \\[fnd, cph\\])"),
+         author = str_replace(author, ".*(?= \\[cph, fnd\\]| \\[fnd\\]|\\[fnd, cph\\])",""),
+         author = str_replace(author, ".*(?= \\[fnd, cph\\])",""))
 
 data_split <- data_split %>%
   mutate(
-    author = gsub("\\[ctb\\]|\\[cph\\]|\\[cre, aut\\]|\\[aut, cre\\]|\\[aut\\]|\\[cet\\]|\\[cph, fnd\\]| \\[fnd\\]|\\[aut, cre, cph\\]|\\[trl\\]", "", author),
+    author = gsub("\\[ctb\\]|\\[cph\\]|\\[cre\\]|\\[cre, aut\\]|\\[aut, cre\\]|\\[aut\\]|\\[cet\\]|\\[cph, fnd\\]| \\[fnd\\]|\\[aut, cre, cph\\]|\\[trl\\]|\\[fnd, cph\\]","", author),
     author = gsub("\\s*,\\s*", ", ", author),  # Remove extra spaces after removal
     author = trimws(author)  # Remove leading/trailing spaces
   )
+
+data_split %>% 
+  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm')) %>% View("data_split5")
 # Split the "author" column into separate authors
 data_split <- data_split %>%
   separate_rows(author, sep = ", ") %>%
@@ -116,29 +122,34 @@ data_split <- data_split %>%
     author = gsub("\\s*\\([^)]*\\)", "", author),  # Remove anything within parentheses
     author = gsub("\\s*,\\s*", ", ", author),  # Remove extra spaces after removal
     author = trimws(author),  # Remove leading/trailing spaces
-    author = sub(',', "", author)
+    author = gsub(',', "", author)
   )
 
-data_split <- data_splits %>% 
+data_split <- data_split %>% 
   mutate(
-    sponsor = ifelse(author == "RStudio" | package == 'ABC.RAP', "RStudio", sponsor)
-  ) %>% 
+    sponsor = ifelse(author == "RStudio" | package == 'ABC.RAP', "RStudio", sponsor),
+    sponsor = trimws(sponsor),
+    sponsor = case_when(
+      sponsor %in% c("RStudio, Pbc.", "Posit PBC", "RStudio", "Posit Software, PBC") ~ "Posit, PBC",
+      sponsor %in% c("R Consortium","The R Consortium") ~ "R Consortium",
+      sponsor == "2744/3-4)" ~ "N/A",
+      is.na(sponsor) ~ "N/A",
+      sponsor %in% c("'FCT, I.P.","FCT", "FCT, I.P.") ~ "FCT, I.P.",
+      sponsor == "<doi:10.13039/501100011033>" ~ "N/A",
+      is.null(sponsor) ~ "N/A",
+      sponsor == "" ~ "N/A",
+      TRUE ~ sponsor
+  )) %>% 
   filter(author != "RStudio") %>% 
-  filter(author != "Rstudio")
+  filter(author != "Rstudio") %>% 
+  filter(author != "") %>% 
+  filter(maintainer_username != "")
 
-
-data_splits %>% 
-  head(n = 1000) %>% 
-  View()
-
-data_split %>% 
-  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP')) %>% View("authorclean")
-
-data_split %>% 
-  filter(author %in% c('RStudio', 'Rstudio')) %>% 
-  View("rstudio")
-  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP')) %>% View("authorclean")
-
+## Check the sponsor column
+# data_split %>% 
+#   select(sponsor) %>%
+#   distinct() %>% 
+#   View()
 
 ## Split the "depends" column into individual dependency values
 data_split <- data_split %>% 
@@ -182,7 +193,15 @@ data_split %>%
 nrow(data_split) #406714 #342245
 
 processed_df <- data_split %>% 
-  select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_name, maintainer_email, institution, domain, published_date)
+  select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_name, maintainer_email, institution, domain, published_date, sponsor)
+
+
+processed_df %>% 
+  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm')) %>% View("authorclean")
+
+processed_df %>% 
+  filter(maintainer_name == 'Kirill Müller') %>% 
+  View()
 
 # EXporting data to csv file
 
