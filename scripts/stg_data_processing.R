@@ -26,8 +26,10 @@ cran_data <- pkg_df %>%
   select_all(tolower) %>%
   select(all_of(colnames))
 
-
-cran_data %>% head(100) %>% View()
+# 
+# cran_data %>% head(100) %>% View()
+# cran_data %>% 
+#   filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm', "abseil", "abodOutlier", "abstractr", "abtest")) %>% View("authorclean")
 
 # working with datetime
 
@@ -69,6 +71,18 @@ data_split <- data_split %>%
 nrow(data_split) # 90552
 nrow(cran_data)
 
+# split the imports column into individual package name
+data_split <- data_split %>%
+  # Split the date column to datatime and normal date values
+  separate_rows(depends, sep = ",") %>% 
+  mutate(depends = sub(" ", "", imports)) %>% 
+  mutate(depends = gsub("\\s*\\(>=.*?\\)", "", depends),
+         depends = gsub("\\s*\\(>=.*?\\)", "", depends))
+
+
+## Replace NA values in imports with values from depends
+data_split <- data_split %>% 
+  mutate(imports = ifelse(is.na(imports), depends, imports))
 # # split the author column and keep only the names
 # data_split <- data_split %>% 
 #   separate_rows(author, sep = ",") %>% 
@@ -152,14 +166,17 @@ data_split <- data_split %>%
 #   View()
 
 ## Split the "depends" column into individual dependency values
-data_split <- data_split %>% 
-  separate_rows(depends, sep = ", ") #%>%
-#filter(!grepl("^R \\(>=", depends))
-
+# data_split_m <- data_split %>% 
+#   separate_rows(depends, sep = ", ") %>%
+#   filter(!grepl("^R \\(>=", depends))
+# 
+# data_split_m %>% 
+#   head(n=2000) %>% 
+#   View()
 
 ## Replace NA values in imports with values from depends
-data_split <- data_split %>% 
-  mutate(imports = ifelse(imports == "" | is.na(imports), depends, imports))
+data_split2 <- data_split1 %>% 
+  mutate(imports = ifelse(is.na(imports), depends, imports))
 
 # Remove single quotes and double quotes from the "description" column
 data_split <- data_split %>%
@@ -190,30 +207,65 @@ data_split <- data_split %>%
 #   head(n=1000) %>% 
 #   View()
 
+
+# Function to remove specified patterns from a character vector
+remove_patterns <- function(text) {
+  cleaned_text <- gsub("\\s*\\[[a-z,\\s]*\\]|\\s*<[a-zA-Z\\s.@]*>", "", text)
+  # Remove patterns enclosed in square brackets or angle brackets
+  cleaned_text <- gsub("\\[[^]]+\\]|\\]|\\[|<[^>]+>", "", cleaned_text)
+  # Remove patterns like "cre" and "cph"
+  cleaned_text <- gsub("\\b(cre|cph|trl|ths|dtc|AT&T|rev|ctb)\\b", "", cleaned_text)
+  # Remove leading and trailing whitespace
+  cleaned_text <- trimws(cleaned_text)
+  return(cleaned_text)
+}
+
+
+
+
 nrow(data_split) #406714 #342245
 
 processed_df <- data_split %>% 
   select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_name, maintainer_email, institution, domain, published_date, sponsor)
 
+processed_df1 <- processed_df %>% 
+  mutate(author = remove_patterns(author))
 
-processed_df %>% 
-  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm')) %>% View("authorclean")
+data_split1 %>% 
+  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm', "abseil", "abodOutlier", "abstractr", "abtest")) %>% View("authorclean")
 
-processed_df %>% 
+df2 %>% 
   filter(maintainer_name == 'Kirill Müller') %>% 
   View()
 
+processed_df1 %>% 
+  head(n=1000) %>% 
+  View()
 
 
 fileEncoding <- "UTF-8"
 
+
+fileEncoding = "UTF-16LE"
+
 # Export the data to a CSV file with the specified encoding
-write.csv(processed_df, "data/processed/cran_database_data2.csv", fileEncoding = fileEncoding, quote = FALSE)
+write.csv(processed_df, "data/processed/cran_database_data.csv", fileEncoding = "latin1", row.names = FALSE)
+
+# Export the data to a CSV file with the specified encoding
+write.csv(processed_df, "data/processed/cran_database_data3.csv", fileEncoding = "unknown")
 # EXporting data to csv file
 
-readr::write_csv(processed_df, "data/processed/cran_process_data.csv")
+readr::write_csv(df, "data/processed/cran_data.csv")
+
+df2 <- readr::read_csv('data/processed/cran_data.csv')
+  read.csv('data/processed/cran_data.csv')
 
 
+# Load data.table package
+library(data.table)
+
+# Write to CSV file
+fwrite(processed_df, "data/processed/cran_new.csv")
 
 library(jsonlite)
 
@@ -247,4 +299,23 @@ processed_df %>%
 
 processed_df %>% distinct(package) %>% nrow()
 
-write.
+df <- processed_df %>% 
+  mutate(
+    author = iconv(author, from = "UTF-8", to = "latin1"),
+    maintainer_name = iconv(maintainer_name, from = "UTF-8", to = "latin1")
+  )
+
+              
+print(Encoding(processed_df$author))
+            
+utf8_data <- iconv(processed_df$author, from = "UTF-8", to = "latin1")
+
+utf8_data_c <- iconv(utf8_data, from = "latin1", to = "UTF-8")
+
+
+
+
+
+utf8_data_c
+utf8
+            
