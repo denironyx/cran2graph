@@ -113,3 +113,6 @@ Note: CRAN DATA, like any other dataset, has its limitations and potential biase
 
 
 557 was removed when I remove rows that contains Rstudio or RStudio
+
+
+## The database retain it's encoding from western europe characters and utf-8

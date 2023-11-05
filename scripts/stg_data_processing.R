@@ -226,7 +226,8 @@ remove_patterns <- function(text) {
 data_split <- data_split %>% 
   mutate(author = remove_patterns(author)) %>% 
   filter(package != "") %>%
-  filter(author != "")
+  filter(author != "") %>% 
+  filter(imports != "")
   
 
 data_split <- data_split %>% 
@@ -241,7 +242,7 @@ processed_df <- data_split %>%
 
 
 ## Export data
-readr::write_csv(processed_df, "data/processed/cran_transformed_data.csv")
+readr::write_csv(processed_df, "data/processed/cran_df.csv")
 
 #>
 #>
@@ -251,7 +252,7 @@ readr::write_csv(processed_df, "data/processed/cran_transformed_data.csv")
 #>
 
 processed_df %>% 
-  distinct(author) %>% 
+  filter(imports == "R") %>% 
   View()
 
 processed_df %>% 
@@ -281,7 +282,7 @@ processed_df %>%
   filter(maintainer_name == 'Kirill Müller') %>% 
   View()
 
-processed_df1 %>% 
+processed_df %>% 
   head(n=1000) %>% 
   View()
 
@@ -289,6 +290,8 @@ processed_df1 %>%
 processed_df1 %>%
   #filter(imports != "R") %>%
   filter(imports != "") %>% 
+  head(n=1000) %>% 
+  View()
   distinct(package) %>% 
   nrow()
   filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm', "abseil", "abodOutlier", "abstractr", "abtest", "A3")) %>% View("authorclean")
