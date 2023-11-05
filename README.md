@@ -34,25 +34,25 @@ This research project contributes to the enhancement of open source package reco
 
 ### Testing Graph
 
-MATCH (a:Person {person: 'Jing Zhang'})-[:MAINTAINS]->(p:Package)
+MATCH (a:Person {name: 'Jing Zhang'})-[:MAINTAINS]->(p:Package)
 RETURN a,p
 LIMIT 10;
 
 ----
 
-MATCH (a:Person {person: 'Hadley Wickham'})-[:CONTRIBUTED_TO]->(p:Package)
+MATCH (a:Person {name: 'Hadley Wickham'})-[:CONTRIBUTED_TO]->(p:Package)
 RETURN p;
 
 
 ----- working
 
-MATCH (a:Person {person: 'Jing Zhang'})-[:MAINTAINS]->(maintainedPackage)
+MATCH (a:Person {name: 'Jing Zhang'})-[:MAINTAINS]->(maintainedPackage)
 MATCH (a)-[:CONTRIBUTED_TO]->(contributedPackage)
 RETURN a, maintainedPackage, contributedPackage
 
 
 -----
-MATCH (a:Person {person: 'Jing Zhang'})-[:CONTRIBUTED_TO]->(p:Package)
+MATCH (a:Person {name: 'Jing Zhang'})-[:CONTRIBUTED_TO]->(p:Package)
 MATCH (p)-[:LICENSE_BY]->(l:License)
 MATCH (a)-[:WORKS_IN]->(i:Institution)
 RETURN a,p, l, i
@@ -64,16 +64,19 @@ RETURN d, p
 LIMIT 25;
 
 -----
-MATCH (p:Package {package: "dplyr"}) -[:DEPENDS_ON]->(d:Dependency)
+MATCH (p:Package {name: "dplyr"}) -[:DEPENDS_ON]->(d:Package)
 
 RETURN p, d
 limit 25;
 
 ---
 
-MATCH (a:Person {person: 'Jing Zhang'})-[:CONTRIBUTED_TO]->(p:Package)
+MATCH (a:Person {name: 'Kirill Müller'})-[:CONTRIBUTED_TO]-(p:Package)
+RETURN p, a
+
+MATCH (a:Person {name: 'Jing Zhang'})-[:CONTRIBUTED_TO]->(p:Package)
 MATCH (p)-[:LICENSE_BY]->(l:License)
-MATCH (p)-[:DEPENDS_ON]->(d:Dependency)
+MATCH (p)-[:DEPENDS_ON]->(d:Package)
 MATCH (a)-[:WORKS_IN]->(i:Institution)
 RETURN a,p, l, i, d
 LIMIT 25;
