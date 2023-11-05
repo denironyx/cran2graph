@@ -82,6 +82,13 @@ RETURN a,p, l, i, d
 LIMIT 25;
 
 
+-----
+
+MATCH (a:Person {name: 'Kirill Müller'})-[:CONTRIBUTED_TO]->(p:Package)
+WHERE NOT (a)-[:DEPENDS_ON]->(p) AND NOT (a)-[:MAINTAINS]->(p)
+RETURN a, p
+
+
 
 # TO do
 
