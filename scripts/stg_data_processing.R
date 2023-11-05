@@ -126,15 +126,14 @@ data_split <- data_split %>%
     author = trimws(author)  # Remove leading/trailing spaces
   )
 
-data_split %>% 
-  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm')) %>% View("data_split5")
+
 # Split the "author" column into separate authors
 data_split <- data_split %>%
   separate_rows(author, sep = ", ") %>%
   mutate(author = trimws(author))  %>% # Remove leading/trailing spaces
   separate_rows(author, sep = ",") %>% 
   separate_rows(author, sep = " and ") %>% 
-  seperate_rows(author, sep = "; ")
+  separate_rows(author, sep = "; ")
 
 data_split <- data_split %>%
   mutate(
@@ -218,20 +217,24 @@ remove_patterns <- function(text) {
   # Remove patterns enclosed in square brackets or angle brackets
   cleaned_text <- gsub("\\[[^]]+\\]|\\]|\\[|<[^>]+>", "", cleaned_text)
   # Remove patterns like "cre" and "cph"
-  cleaned_text <- gsub("\\b(cre|cph|trl|ths|dtc|AT&T|rev|ctb)\\b", "", cleaned_text)
+  cleaned_text <- gsub("\\b(cre|cph|trl|ths|dtc|AT&T|rev|ctb|aut|and|Company)\\b", "", cleaned_text)
   # Remove leading and trailing whitespace
   cleaned_text <- trimws(cleaned_text)
   return(cleaned_text)
 }
 
 data_split <- data_split %>% 
-  filter(package != "") %>% 
-  mutate(author = remove_patterns(author))
+  mutate(author = remove_patterns(author)) %>% 
+  filter(package != "") %>%
+  filter(author != "")
+  
 
 data_split <- data_split %>% 
   mutate(author = iconv(author, from = "UTF-8", to = "latin1"),
          maintainer_name = iconv(maintainer_name, from = "UTF-8", to = "latin1"))
 
+
+data_split <- data_split[!grepl("contribut", data_split$author, ignore.case = TRUE), ]
 
 processed_df <- data_split %>% 
   select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_name, maintainer_email, institution, domain, published_date, sponsor)
@@ -256,9 +259,17 @@ processed_df %>%
 
 ## removing contributors columns 
 
-contributors_rows <- processed_df[grepl("contributors", processed_df$author, ignore.case = TRUE), ]
+
+contributors_rows <- processed_df[grepl("contribut", processed_df$author, ignore.case = TRUE), ]
+
+processed_df1 <- processed_df[!grepl("contribut", processed_df$author, ignore.case = TRUE), ]
+
 
 nrow(data_split) #406714 #342245
+
+processed_df1 %>% 
+  distinct(author) %>% 
+  View()
 
 processed_df1 <- processed_df %>% 
   mutate(author = remove_patterns(author))
