@@ -62,6 +62,8 @@ data_split <- data_split %>%
 
 # split the imports column into individual package name
 data_split <- data_split %>%
+  ## Replace NA values in imports with values from depends
+  mutate(imports = ifelse(is.na(imports) | is.null(imports), depends, imports)) %>% 
   # Split the date column to datatime and normal date values
   separate_rows(imports, sep = ",") %>% 
   mutate(imports = sub(" ", "", imports)) %>% 
@@ -70,19 +72,19 @@ data_split <- data_split %>%
 
 nrow(data_split) # 90552
 nrow(cran_data)
-
-# split the imports column into individual package name
-data_split <- data_split %>%
-  # Split the date column to datatime and normal date values
-  separate_rows(depends, sep = ",") %>% 
-  mutate(depends = sub(" ", "", imports)) %>% 
-  mutate(depends = gsub("\\s*\\(>=.*?\\)", "", depends),
-         depends = gsub("\\s*\\(>=.*?\\)", "", depends))
-
-
-## Replace NA values in imports with values from depends
-data_split <- data_split %>% 
-  mutate(imports = ifelse(is.na(imports), depends, imports))
+# 
+# # split the imports column into individual package name
+# data_split <- data_split %>%
+#   # Split the date column to datatime and normal date values
+#   separate_rows(depends, sep = ",") %>% 
+#   mutate(depends = sub(" ", "", imports)) %>% 
+#   mutate(depends = gsub("\\s*\\(>=.*?\\)", "", depends),
+#          depends = gsub("\\s*\\(>=.*?\\)", "", depends))
+# 
+# 
+# 
+# data_split <- data_split %>% 
+#   mutate(imports = ifelse(is.na(imports), depends, imports))
 # # split the author column and keep only the names
 # data_split <- data_split %>% 
 #   separate_rows(author, sep = ",") %>% 
@@ -129,7 +131,10 @@ data_split %>%
 # Split the "author" column into separate authors
 data_split <- data_split %>%
   separate_rows(author, sep = ", ") %>%
-  mutate(author = trimws(author))  # Remove leading/trailing spaces
+  mutate(author = trimws(author))  %>% # Remove leading/trailing spaces
+  separate_rows(author, sep = ",") %>% 
+  separate_rows(author, sep = " and ") %>% 
+  seperate_rows(author, sep = "; ")
 
 data_split <- data_split %>%
   mutate(
@@ -157,7 +162,9 @@ data_split <- data_split %>%
   filter(author != "RStudio") %>% 
   filter(author != "Rstudio") %>% 
   filter(author != "") %>% 
-  filter(maintainer_username != "")
+  filter(maintainer_username != "") %>% 
+  filter(package != "")
+  
 
 ## Check the sponsor column
 # data_split %>% 
@@ -217,13 +224,41 @@ remove_patterns <- function(text) {
   return(cleaned_text)
 }
 
+data_split <- data_split %>% 
+  filter(package != "") %>% 
+  mutate(author = remove_patterns(author))
 
+data_split <- data_split %>% 
+  mutate(author = iconv(author, from = "UTF-8", to = "latin1"),
+         maintainer_name = iconv(maintainer_name, from = "UTF-8", to = "latin1"))
 
-
-nrow(data_split) #406714 #342245
 
 processed_df <- data_split %>% 
   select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_name, maintainer_email, institution, domain, published_date, sponsor)
+
+
+## Export data
+readr::write_csv(processed_df, "data/processed/cran_transformed_data.csv")
+
+#>
+#>
+#>
+#>
+#>
+#>
+
+processed_df %>% 
+  distinct(author) %>% 
+  View()
+
+processed_df %>% 
+  filter(author == 'George Leslie-Waksman and other contributors')
+
+## removing contributors columns 
+
+contributors_rows <- processed_df[grepl("contributors", processed_df$author, ignore.case = TRUE), ]
+
+nrow(data_split) #406714 #342245
 
 processed_df1 <- processed_df %>% 
   mutate(author = remove_patterns(author))
@@ -231,13 +266,22 @@ processed_df1 <- processed_df %>%
 processed_df1 %>% 
   filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm', "abseil", "abodOutlier", "abstractr", "abtest")) %>% View("authorclean")
 
-df2 %>% 
+processed_df %>% 
   filter(maintainer_name == 'Kirill Müller') %>% 
   View()
 
 processed_df1 %>% 
   head(n=1000) %>% 
   View()
+
+
+processed_df1 %>%
+  #filter(imports != "R") %>%
+  filter(imports != "") %>% 
+  distinct(package) %>% 
+  nrow()
+  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm', "abseil", "abodOutlier", "abstractr", "abtest", "A3")) %>% View("authorclean")
+
 
 
 fileEncoding <- "UTF-8"
