@@ -174,9 +174,6 @@ data_split <- data_split %>%
 #   head(n=2000) %>% 
 #   View()
 
-## Replace NA values in imports with values from depends
-data_split2 <- data_split1 %>% 
-  mutate(imports = ifelse(is.na(imports), depends, imports))
 
 # Remove single quotes and double quotes from the "description" column
 data_split <- data_split %>%
@@ -231,7 +228,7 @@ processed_df <- data_split %>%
 processed_df1 <- processed_df %>% 
   mutate(author = remove_patterns(author))
 
-data_split1 %>% 
+processed_df1 %>% 
   filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm', "abseil", "abodOutlier", "abstractr", "abtest")) %>% View("authorclean")
 
 df2 %>% 
