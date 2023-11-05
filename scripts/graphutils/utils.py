@@ -7,8 +7,8 @@ class Neo4jConnect:
     def close(self):
         self.driver.close()
         
-    def query(self, query):
-        session = self.driver.session(database="cran")
+    def query(self, db, query):
+        session = self.driver.session(database=db)
         result = session.run(query)
         return result
     
@@ -37,7 +37,7 @@ import logging
 import neo4j
 
 
-def get_neo4j_connection() -> neo4j.Session:
+def get_neo4j_connection(db) -> neo4j.Session:
     """
     Gets a session to neo4j
     """
@@ -46,7 +46,7 @@ def get_neo4j_connection() -> neo4j.Session:
     )
     try:
         driver.verify_connectivity()
-        session = driver.session(database="neo4j")
+        session = driver.session(database=db)
         return session
     except Exception as connection_error:
         logging.error("Failed to establish session to neo4j", connection_error)

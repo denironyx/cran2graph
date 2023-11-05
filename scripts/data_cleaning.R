@@ -20,11 +20,9 @@ colnames = c("package", "version","depends", "imports", "suggests", "license", "
 # cran_data %>% 
 #   filter(Imports %in% 'DBI (>= 1.0.0)')
 
-
 cran_data <- pkg_df %>% 
   select_all(tolower) %>%
   select(all_of(colnames))
-
 
 cran_data %>% head(100) %>% View()
 
@@ -41,7 +39,6 @@ data_split %>% head(n=100) %>% View()
 
 data_split %>% 
   filter(package == 'abjutils')
-
 
 # Extract username from the packaged column using ";" as the separator
 data_split <- data_split %>% 

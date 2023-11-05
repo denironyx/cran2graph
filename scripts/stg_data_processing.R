@@ -268,7 +268,7 @@ processed_df1 <- processed_df[!grepl("contribut", processed_df$author, ignore.ca
 nrow(data_split) #406714 #342245
 
 processed_df1 %>% 
-  distinct(author) %>% 
+  distinct(sponsor) %>% 
   View()
 
 processed_df1 <- processed_df %>% 
