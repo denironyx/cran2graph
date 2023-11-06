@@ -127,7 +127,5 @@ Note: CRAN DATA, like any other dataset, has its limitations and potential biase
 
 ## The database retain it's encoding from western europe characters and utf-8
 
-
-
 Kirill Müller
 Kirill Müller
