@@ -275,8 +275,8 @@ processed_df1 %>%
 processed_df1 <- processed_df %>% 
   mutate(author = remove_patterns(author))
 
-processed_df1 %>% 
-  filter(package %in%  c('MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm', "abseil", "abodOutlier", "abstractr", "abtest")) %>% View("authorclean")
+processed_df %>% 
+  filter(package %in%  c('igraph','MASS', 'DBI', 'duckplyr', 'abjutils' , 'ABC.RAP', 'dm', "abseil", "abodOutlier", "abstractr", "abtest")) %>% View("authorclean")
 
 processed_df %>% 
   filter(maintainer_name == 'Kirill Müller') %>% 
