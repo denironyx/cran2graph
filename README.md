@@ -88,6 +88,16 @@ MATCH (a:Person {name: 'Kirill Müller'})-[:CONTRIBUTED_TO]->(p:Package)
 WHERE NOT (a)-[:DEPENDS_ON]->(p) AND NOT (a)-[:MAINTAINS]->(p)
 RETURN a, p
 
+-------
+MATCH (p:Person {name: 'Kirill Müller'})-[:MAINTAINS]->(pkg:Package)
+RETURN pkg.name
+
+
+------ dependency count
+MATCH (p1:Package)-[:DEPENDS_ON]->(p2:Package)
+WITH p2, COUNT(p1) AS dependencyCount
+ORDER BY dependencyCount DESC
+RETURN p2, dependencyCount
 
 
 # TO do
@@ -129,3 +139,8 @@ Note: CRAN DATA, like any other dataset, has its limitations and potential biase
 
 Kirill Müller
 Kirill Müller
+
+
+## To do
+- rgdal dependencies isn't showing
+- Develop a use case to exploring the dependency in the geospatial community
