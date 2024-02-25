@@ -38,6 +38,9 @@ MATCH (a:Person {name: 'Jing Zhang'})-[:MAINTAINS]->(p:Package)
 RETURN a,p
 LIMIT 10;
 
+MATCH (a:Person {name: 'Kirill Müller'})-[:CONTRIBUTED_TO]->(p:Package)
+RETURN a, p
+
 ----
 
 MATCH (a:Person {name: 'Hadley Wickham'})-[:CONTRIBUTED_TO]->(p:Package)
