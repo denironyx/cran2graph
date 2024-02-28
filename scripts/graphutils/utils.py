@@ -2,7 +2,7 @@ from neo4j import GraphDatabase
 
 class Neo4jConnect:
     def __init__(self, user, password):
-        self.driver = GraphDatabase.driver("bolt://localhost:7687", auth=(user, password))
+        self.driver = GraphDatabase.driver("bolt://localhost:7689", auth=(user, password))
         self.user = user
     def close(self):
         self.driver.close()
@@ -42,7 +42,7 @@ def get_neo4j_connection(db) -> neo4j.Session:
     Gets a session to neo4j
     """
     driver = neo4j.GraphDatabase.driver(
-        "bolt://localhost:7687", auth=("admin", "cran2graph")
+        "bolt://localhost:7689", auth=("admin", "cran2graph")
     )
     try:
         driver.verify_connectivity()
