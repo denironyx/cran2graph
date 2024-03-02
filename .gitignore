@@ -5,3 +5,4 @@ cran2graph.Rproj
 data/processed
 .env
 environ.json
+/venv
