@@ -145,13 +145,13 @@ data_split %>%
 
 nrow(data_split) #406714 #342245
 
+#processing data 
 processed_df <- data_split %>% 
   select(package, version, depends,imports, license, md5sum, author, description, encoding, maintainer_name, maintainer_email, institution, domain, published_date)
 
 # EXporting data to csv file
 
 readr::write_csv(processed_df, "data/processed/cran_process_data.csv")
-
 
 ## Replace NA values in imports with values from depends
 processed_df %>% 
@@ -175,4 +175,5 @@ processed_df %>% head()
 processed_df %>% 
   filter(package == 'boot') %>% View()
 
+# checking the rows
 processed_df %>% distinct(package) %>% nrow()
