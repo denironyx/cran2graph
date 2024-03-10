@@ -102,6 +102,35 @@ WITH p2, COUNT(p1) AS dependencyCount
 ORDER BY dependencyCount DESC
 RETURN p2, dependencyCount
 
+--------------
+```
+library(neo2R)
+graph <- startGraph(
+  "http://localhost:7474",
+  username="admin", password="cran2graph",
+  #importPath="~/neo4j_home/neo4jImport",
+  #.opts = list(ssl_verifypeer=0)
+)
+
+df <- cypher(
+  graph,
+  prepCql("MATCH (a:Person {name: 'Jing Zhang'})-[:MAINTAINS]->(p:Package)",
+          "RETURN a,p")
+)
+
+print(head(df))
+
+result2 = cypher(
+  graph,
+  query = contr,
+  result = "row",
+  arraysAsStrings = TRUE,
+  eltSep = " || "
+)
+
+view(result2)
+
+```
 
 # TO do
 
