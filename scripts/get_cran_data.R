@@ -72,19 +72,23 @@ pkgs[is.na(first_release), c('first_release', 'versions') := {
     list(as.character(min(pkgarchive$`Last modified`)), versions + nrow(pkgarchive))
 }, by = name]
 
+# Fetch packages from cran 
 pkg_df <- tools::CRAN_package_db()
 
-pkgs <- pkg_df %>% select(name = Package)
+## convert the name of the package and change it to name
+pkg_df <- pkg_df %>% 
+  select(name = Package) %>% 
+  mutate(name = tolower(name))
 
+## convert the name of packages
+pkgs <- pkgs %>%
+  mutate(name = tolower(name))
 
-pkgs <- pkgs %>% mutate(name = tolower(name))
+## joined the datasets left join
+joined_df <- left_join(pkg_df, pkgs, by = "name")
 
-pkg_cran <- pkg_cran %>% mutate(name = tolower(name))
-
-joined_df <- left_join(pkgs, pkg_cran, by = "name")
-
-pkg <- joined_df %>% filter(!is.na(first_release))
-
+## remove nas
+pkgs <- joined_df %>% filter(!is.na(first_release))
 
 ## rename cols
 setnames(pkgs, 'date', 'first_release')
