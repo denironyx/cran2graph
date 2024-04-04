@@ -72,20 +72,52 @@ pkgs[is.na(first_release), c('first_release', 'versions') := {
     list(as.character(min(pkgarchive$`Last modified`)), versions + nrow(pkgarchive))
 }, by = name]
 
+pkg_df <- tools::CRAN_package_db()
+
+pkgs <- pkg_df %>% select(name = Package)
+
+
+pkgs <- pkgs %>% mutate(name = tolower(name))
+
+pkg_cran <- pkg_cran %>% mutate(name = tolower(name))
+
+joined_df <- left_join(pkgs, pkg_cran, by = "name")
+
+pkg <- joined_df %>% filter(!is.na(first_release))
+
+
 ## rename cols
 setnames(pkgs, 'date', 'first_release')
 
 ## order by date & alphabet
-setorder(pkgs, first_release, name)
+setorder(pkg, first_release, name)
 pkgs[, index := .I]
 pkgs[c(250, 500, (1:13)*1000)]
 
-
+saveRDS(pkgs, 'pkgs-final.rds')
 library(ggplot2)
 ggplot(pkgs, aes(as.Date(first_release), index)) +
   geom_line(size = 2) +
   scale_x_date(date_breaks = '1 year', date_labels = '%Y') +
-  scale_y_continuous(breaks = seq(0, 16000, 1000)) +
-  xlab('') + ylab('') + theme_bw() +
+  scale_y_continuous(breaks = seq(0, 20000, 1000)) +
+  xlab('Years') + ylab('Packages') + theme_bw() +
   ggtitle('Number of R packages ever published on CRAN')
 ggsave('number-of-submitted-packages-to-CRAN.png')
+
+
+# Convert first_release column to Date format
+pkgs$first_release <- as.Date(pkgs$first_release)
+
+# Extract year from first_release
+pkgs$year <- format(pkgs$first_release, "%Y")
+
+pkgs_cumulative <- aggregate(versions ~ year, data = pkgs, FUN = sum)
+pkgs_cumulative$cumulative <- cumsum(pkgs_cumulative$versions)
+
+# Plot the line graph
+ggplot(pkgs_cumulative, aes(x = as.Date(paste(year, "-01-01", sep = "")), y = cumulative)) +
+  geom_line(size = 2) +
+  scale_x_date(date_breaks = '1 year', date_labels = '%Y') +
+  scale_y_continuous(breaks = seq(0, max(pkgs_cumulative$cumulative), by = 1000)) +
+  labs(x = "", y = "", title = "Cumulative Number of R packages published on CRAN") 
+ggsave('cumulative-of-submitted-packages-to-CRAN.png')
