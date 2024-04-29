@@ -1,0 +1,10 @@
+Question,Expected Answer,KG-based Answer,GPT-based Answer,KG Correct,GPT Correct
+How many packages is maintained by Kirill Müller?,28,Kirill Müller maintains 28 packages.,Kirill Müller maintains 36 open-source packages.,1,0
+How many packages has Kirill Müller contributed to?,54,Kirill Müller has contributed to 54 packages.,Kirill Müller has contributed to 3 packages in the open source ecosystem.,1,0
+Name of package Dennis Irorere contributed to,anyflights,The name of the package Dennis Irorere contributed to is anyflights.,"Sorry, I do not have that information.",1,0
+Who maintains anyflights package,Simon P. Couch,Simon P. Couch maintains the anyflights package.,The anyflights package is not a known open-source package in the ecosystem.,1,0
+Who is maintaining the most packages?,Dirk Eddelbuettel,Dirk Eddelbuettel is maintaining the most packages.,Most packages are maintained by individual developers or small teams.,1,0
+Who is contributing to the most to packages?,Hadley Wickham,Hadley Wickham is contributing the most to packages.,Various developers and organizations contribute to the open-source package ecosystem.,1,0
+What package have the most contributions,mlpack,mlpack has the most contributions.,"""React"" has one of the most contributions in the open source package ecosystem.",1,0
+What packages depend on the most?,stats,"The package ""stats"" has a dependency count of 5488.","express, react, lodash, and webpack are among the most depended-on packages in the open source ecosystem.",1,0
+Who is the creator of the pandas package?,Wes McKinney,I don't know the answer.,Wes McKinney.,0,1
